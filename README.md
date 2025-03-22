@@ -1,5 +1,6 @@
-Binôme: 
-- Touré-Ydaou TEOURI 
+Binôme:
+
+- Touré-Ydaou TEOURI
 - Younes MANSOUS
 
 # Traffik : une application web informant sur les pertubations le réseau IDFM (Ile de France Mobilité)
@@ -16,13 +17,13 @@ Pour chaque pertubation l'application donne : - le nom de la ligne - le mode de 
 
 # Fonctionnalités de l'application
 
-  - L'application récupère tous les messages de pertubations chaque jour
+- L'application récupère tous les messages de pertubations chaque jour
 
-  -  Les informations sont affichés selon la ligne choisie dans un flux d'information similaire à Facebook
+- Les informations sont affichés selon la ligne choisie dans un flux d'information similaire à Facebook
 
 # Cas d'utilisation
 
-- Mocktar s'inscrit et se connecte à l'application, une page d'accueil vide lui propose le mode de transport, puis la ligne dont il veut consulter les informations. Après avoir réalisé sont choix il voit les informations de la ligne correspondante. 
+- Mocktar s'inscrit et se connecte à l'application, une page d'accueil vide lui propose le mode de transport, puis la ligne dont il veut consulter les informations. Après avoir réalisé sont choix il voit les informations de la ligne correspondante.
 
 - Julie se connecte à l'application après avoir affiché les informations de sa ligne quotidienne, elle voit une information qui attire son interêt et décide d'y ajouter un commentaire.
 
@@ -44,105 +45,71 @@ Il s'agit de la table contenant les informations sur les lignes de transport d'i
 
 Les identifiants des lignes doivent respecter un format précis fourni par IDFM, pour cela ceux-ci on été récupérés depuis leur jeux de données et insérés directement en base.
 
-#### Messages
+#### Events
 
-Cette table contient l'ensemble des messages concernant l'actualité du trafic d'IDFM, chaque message est lié à une ligne de transport donnée.
+Cette table contient l'ensemble des évenements concernant l'actualité du trafic d'IDFM, chaque évenements est lié à une ligne de transport donnée.
 
-| id  | title             | content           | line_id (clé étrangère)    | published_date  | created_date    |
-| --- | ----------------- | ----------------- | ----------- | --------------- | --------------- |
-| 1   | Metro 5 : Travaux | <p>Lorem Ipsum<p> | IDFM:C01380 | 20250318T220307 | 20250318T220307 |
-
+| id  | title             | content           | line_id (clé étrangère) | published_date  | created_date    |
+| --- | ----------------- | ----------------- | ----------------------- | --------------- | --------------- |
+| 1   | Metro 5 : Travaux | <p>Lorem Ipsum<p> | IDFM:C01380             | 20250318T220307 | 20250318T220307 |
 
 #### Comments
 
 Cette table contient les commentaires des utilisateurs de la plateforme. Chaque commentaire est rattaché à un message de pertubation et à un utilisateur donné.
 
-| id | content     | message_id (clé étrangère) | user_id (clé étrangère) | created_date    | created_date    |
-|----|-------------|------------|---------|-----------------|-----------------|
-| 1  | Lorem Ipsum | 85         | 525     | 20250318T220307 | 20250318T220307 |
-
+| id  | content     | event_id (clé étrangère) | user_id (clé étrangère) | created_date    | created_date    |
+| --- | ----------- | ------------------------ | ----------------------- | --------------- | --------------- |
+| 1   | Lorem Ipsum | 85                       | 525                     | 20250318T220307 | 20250318T220307 |
 
 #### Users
 
 Cette table contient les informations des utilisateurs, chaque email contenu dans cette table est unique.
 
-| id | name        | email | password                                                     | created_at      |
-|----|-------------|-------|--------------------------------------------------------------|-----------------|
-| 1  | John Doe | johndoe@email.com | \$2a\$14$ajq8Q7fbtFRQvXpdCq7Jcuy.Rx1h/L4J60Otx.gyNLbAYctGMJ9tK | 20250318T220307 |
+| id  | name     | email             | password                                                       | created_at      |
+| --- | -------- | ----------------- | -------------------------------------------------------------- | --------------- |
+| 1   | John Doe | johndoe@email.com | \$2a\$14$ajq8Q7fbtFRQvXpdCq7Jcuy.Rx1h/L4J60Otx.gyNLbAYctGMJ9tK | 20250318T220307 |
 
-Les données sont liées entre elles avec par les clés étrangères. Nous avons établi des règles sur celles-ci : 
+Les données sont liées entre elles avec par les clés étrangères. Nous avons établi des règles sur celles-ci :
+
 - Sur la règle `ON DELETE`, nous avons choisi `CASCADE`, ce qui permet lors de la suppression d'une donnée de supprimer automatique toutes les données qui y font référence.
-   - Par exemple : lors de la suppression d'un message d'actualité tous les commentaires associés sont automatiquement supprimés
--  Sur la règle `ON UPDATE`, nous avons choisi `CASCADE`, ce qui permet lorque l'identifiant d'une ressource est mise à jour, alors cet identifiant est mis à jour pour toutes les données y faisant référence.
-    - Par exemple : si l'identifiant de la ligne de métro 8 change alors tous les messages d'alerte y faisant référence veront leur attribut `line_id` mis à jour
+  - Par exemple : lors de la suppression d'un évenement tous les commentaires associés sont automatiquement supprimés
+- Sur la règle `ON UPDATE`, nous avons choisi `CASCADE`, ce qui permet lorque l'identifiant d'une ressource est mise à jour, alors cet identifiant est mis à jour pour toutes les données y faisant référence.
+  - Par exemple : si l'identifiant de la ligne de métro 8 change alors tous les évenements y faisant référence veront leur attribut `line_id` mis à jour
 
+# Mise à jour des données
 
-# Mise à jour des données 
+Pour la mise à jour des données nous faisons appel à l'API externe **tous les jours à 8h00** et sauvegardons les nouveaux évenements concernants chaque lignes. Avant de réaliser cette opérations les évenements précedent sont supprimés.
 
-Pour la mise à jour des données nous faisons appel à l'API externe **tous les jours à 8h00** et sauvegardons les nouveaux messages concernants chaque lignes. Avant de réaliser cette opérations les messages précedent sont supprimés.
-
-
-# Serveur 
+# Serveur
 
 Nous avons implémentés une **API REST** et avons optés pour une approche **ressource**, notre API étant principalement centrée sur des entitées. Voici les composants permettant de manipuler nos ressources :
 
 - Authentification
-   - Connexion : 
+  - Connexion :
 - Users
   - Inscription : création d'un nouvel utilisateur
 - Lines:
   - Modes : récuperer les modes de transports
   - Identifiants : récuperer les identifiants des lignes en fonction du mode de transport
-- Messages 
-  - Flux informations : récupère les messages d'information selon la ligne choisie par l'utilisateur
+- Evenements
+  - Flux informations : récupère les évenements de la ligne choisie par l'utilisateur
 - Comments
-  - Commenter : l'utilisateur commente un message
-  - Flux commentaires : récupère les commentaires d'un message d'information
+  - Commenter : l'utilisateur commente un évenement
+  - Flux commentaires : récupère les commentaires d'un évenement
 
 ## Endpoints de l'API
 
 Voici une description des différents endpoints de notre API.
 
-- `/auth`: composant *authentification*
-    - `POST /auth` : connexion d'un utilisateur
-- `/user` : composant *users*
-  - `POST /user` :  création d'un nouvel utilisateur
-- `/lines` : composant *lines*
+- `/auth`: composant _authentification_
+  - `POST /auth` : connexion d'un utilisateur
+- `/user` : composant _users_
+  - `POST /user` : création d'un nouvel utilisateur
+- `/lines` : composant _lines_
   - `GET /lines/modes` : récupère les modes de transport d'IDFM
   - `GET /lines/modes/id` : rècupère les identifiants de toutes les lignes d'un mode de transport donné
-- `/messages` :
-  - `GET /messages/:id_line` : récupère l'ensemble des messages concernant une ligne donnée
+- `/events` :
+  - `GET /events/:id_line` : récupère l'ensemble des évenements concernant une ligne donnée
 - `/comments` :
   - `POST /comments` : permet à l'utilisateur de rajouter un commentaire **ici l'authentification est obligatoire**
-  - `GET /comments/:message_id` : permet de récupérer les commentaires d'un message
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  - `GET /comments/:message_id` : permet de récupérer les commentaires d'un évenement
