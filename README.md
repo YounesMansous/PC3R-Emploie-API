@@ -113,7 +113,7 @@ Voici une description des différents endpoints de notre API.
 - `/messages` :
   - `GET /messages/:id_line` : récupère l'ensemble des messages concernant une ligne donnée
 - `/comments` :
-  - `POST /comments` : permet à l'utilisateur de rajouter un commentaire
+  - `POST /comments` : permet à l'utilisateur de rajouter un commentaire **ici l'authentification est obligatoire**
   - `GET /comments/:message_id` : permet de récupérer les commentaires d'un message
 
 
