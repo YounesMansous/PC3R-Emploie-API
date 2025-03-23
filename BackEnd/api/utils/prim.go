@@ -1,15 +1,15 @@
-package main
+package utils
 
 import (
 	"fmt"
-	"net/http"
 	"io"
+	"net/http"
 	"os"
 )
 
-func main() {
+func PrimCall() {
 
-	url := "https://prim.iledefrance-mobilites.fr/marketplace/v2/navitia/line_reports/lines%2Fline%3AIDFM%3AC01727/line_reports?depth=1&count=1&tags%5B%5D=Actualit%C3%A9"
+	url := "https://prim.iledefrance-mobilites.fr/marketplace/v2/navitia/line_reports/line_reports?depth=1&disable_geojson=true&tags%5B%5D=Actualit%C3%A9"
 
 	req, _ := http.NewRequest("GET", url, nil)
 
@@ -19,9 +19,6 @@ func main() {
 
 	defer res.Body.Close()
 	body, _ := io.ReadAll(res.Body)
-
-	//fmt.Println(res)
-	//fmt.Println(string(body))
 
 	f, err := os.Create("test.json")
 
@@ -39,7 +36,7 @@ func main() {
 
 		fmt.Println(err)
 
-        f.Close()
+		f.Close()
 
 		return
 
@@ -56,6 +53,5 @@ func main() {
 		return
 
 	}
-
 
 }
