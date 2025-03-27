@@ -112,7 +112,7 @@ Voici une description des différents endpoints de notre API.
   - `GET /lines/modes` : récupère les modes de transport d'IDFM
   - `GET /lines/modes/id?mode=bus` : rècupère les identifiants de toutes les lignes d'un mode de transport donné
 - `/events` : composant _events_
-  - `GET /events?id_line=IDFM::CO1352` : récupère l'ensemble des évenements concernant une ligne donnée
+  - `GET /events/line?id_line=IDFM::CO1352` : récupère l'ensemble des évenements concernant une ligne donnée
   - `GET /events?id=52` : récupère un évenement donné en fonction de son identifiant
 - `/comments` : composant _comments_
   - `POST /comments/add?event_id=20` : permet à l'utilisateur de rajouter un commentaire **ici l'authentification est obligatoire**
