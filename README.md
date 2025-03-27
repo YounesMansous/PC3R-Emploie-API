@@ -9,7 +9,9 @@ Traffik est une application permettant de connaitre les pertubations sur le rés
 
 # Choix de l'API web
 
-Nous avons choisi d'utiliser l'API [d'ile de france mobilité](https://prim.iledefrance-mobilites.fr/fr/apis/idfm-navitia-line_reports-v2) qui donne les messages d'informations sur le trafic en temps réel sur l'ensemble de ses transports. Cette APi est gratuite, elle permet de faire 4000 requêtes par jour. Pour une requête elle donne la possibilité de faire une recherche d'informations selon : - le mode de transport - l'identifiant de la ligne
+Nous avons choisi d'utiliser l'API [d'ile de france mobilité](https://prim.iledefrance-mobilites.fr/fr/apis/idfm-navitia-line_reports-v2) qui donne les messages d'informations sur le trafic en temps réel sur l'ensemble de ses transports. Cette APi est gratuite, elle permet de faire 4000 requêtes par jour. Pour une requête elle donne la possibilité de faire une recherche d'informations selon : 
+- le mode de transport 
+- l'identifiant de la ligne
 
 Notre application permet de rechercher les messages de pertubations en fonction de la ligne de transport choisie par l'utilisateur.
 
