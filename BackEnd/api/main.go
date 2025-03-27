@@ -28,7 +28,8 @@ func main() {
 	mux.HandleFunc("/user", users.CreateUserHandler)
 	mux.HandleFunc("/lines/modes", lines.GetTransportModesHandler)
 	mux.HandleFunc("/lines/modes/id", lines.GetTransportModeLinesIdsHandler)
-	mux.HandleFunc("/events", events.GetLineEventsHandler)
+	mux.HandleFunc("/events/line", events.GetLineEventsHandler)
+	mux.HandleFunc("/events", events.GetEventHandler)
 	mux.HandleFunc("/comments/add", comments.AddCommentHandler)
 	mux.HandleFunc("/comments", comments.GetEventCommentsHandler)
 
