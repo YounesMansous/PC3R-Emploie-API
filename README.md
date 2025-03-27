@@ -93,6 +93,7 @@ Nous avons implémentés une **API REST** et avons optés pour une approche **re
   - Identifiants : récuperer les identifiants des lignes en fonction du mode de transport
 - Evenements
   - Flux informations : récupère les évenements de la ligne choisie par l'utilisateur
+  - Détails evenement : récupère un évenement particulier
 - Comments
   - Commenter : l'utilisateur commente un évenement
   - Flux commentaires : récupère les commentaires d'un évenement
@@ -108,8 +109,9 @@ Voici une description des différents endpoints de notre API.
 - `/lines` : composant _lines_
   - `GET /lines/modes` : récupère les modes de transport d'IDFM
   - `GET /lines/modes/id?mode=bus` : rècupère les identifiants de toutes les lignes d'un mode de transport donné
-- `/events` :
+- `/events` : composant _events_
   - `GET /events?id_line=IDFM::CO1352` : récupère l'ensemble des évenements concernant une ligne donnée
-- `/comments` :
+  - `GET /events?id=52` : récupère un évenement donné en fonction de son identifiant
+- `/comments` : composant _comments_
   - `POST /comments/add?event_id=20` : permet à l'utilisateur de rajouter un commentaire **ici l'authentification est obligatoire**
   - `GET /comments?event_id=20` : permet de récupérer les commentaires d'un évenement
