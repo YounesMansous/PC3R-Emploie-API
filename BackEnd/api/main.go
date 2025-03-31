@@ -5,6 +5,7 @@ import (
 	"api/controllers/comments"
 	"api/controllers/events"
 	"api/controllers/lines"
+	"api/middlewares"
 	"api/utils/database"
 	"fmt"
 	"net/http"
@@ -29,7 +30,7 @@ func main() {
 	mux.HandleFunc("/lines/modes/id", lines.GetTransportModeLinesIdsHandler)
 	mux.HandleFunc("/events/line", events.GetLineEventsHandler)
 	mux.HandleFunc("/events", events.GetEventHandler)
-	mux.HandleFunc("/comments/add", comments.AddCommentHandler)
+	mux.Handle("/comments/add", middlewares.JWTMiddleware(http.HandlerFunc(comments.AddCommentHandler)))
 	mux.HandleFunc("/comments", comments.GetEventCommentsHandler)
 
 	fmt.Println("Server started on port 8080")

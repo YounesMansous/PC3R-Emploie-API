@@ -52,6 +52,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	defer rows.Close()
+
 	if rows.Next() {
 		err := rows.Scan(&user.Email, &user.Password)
 		if err != nil {

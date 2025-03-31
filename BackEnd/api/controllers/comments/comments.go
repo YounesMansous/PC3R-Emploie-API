@@ -1,6 +1,7 @@
 package comments
 
 import (
+	"api/controllers/auth"
 	"api/models"
 	"api/utils/database"
 	"context"
@@ -48,11 +49,47 @@ func AddCommentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = database.DB.Exec(context.Background(), "INSERT INTO comments (user_id, content, event_id) VALUES ($1, $2, $3)", comment.User, comment.Content, comment.Event)
+	cookie, err := r.Cookie("jwt")
+
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	jwtToken, err := auth.ValidateJWT(cookie.Value)
+
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	rows, err := database.DB.Query(context.Background(), "SELECT id FROM users WHERE email=$1", jwtToken.Email)
 
 	if err != nil {
 		log.Println(err)
-		http.Error(w, "Database insert error", http.StatusInternalServerError)
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+
+	defer rows.Close()
+
+	if rows.Next() {
+		values, err := rows.Values()
+		if err != nil {
+			log.Println(err)
+			http.Error(w, "Database error", http.StatusInternalServerError)
+			return
+		}
+		user_id := values[0]
+		_, err = database.DB.Exec(context.Background(), "INSERT INTO comments (user_id, content, event_id) VALUES ($1, $2, $3)", user_id, comment.Content, comment.Event)
+
+		if err != nil {
+			log.Println(err)
+			http.Error(w, "Database insert error", http.StatusInternalServerError)
+			return
+		}
+	} else {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
