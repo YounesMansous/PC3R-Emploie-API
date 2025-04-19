@@ -8,9 +8,24 @@ import (
 	"api/middlewares"
 	"api/utils/database"
 	"fmt"
+	"log"
 	"net/http"
+	"os"
+
+	"github.com/joho/godotenv"
+	"github.com/robfig/cron/v3"
 )
 
+func goDotEnvVariable(key string) string {
+
+	err := godotenv.Load(".env")
+
+	if err != nil {
+		log.Fatalf("Error loading .env file", err)
+	}
+
+	return os.Getenv(key)
+}
 func loggingRequestMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("%s %s\n", r.Method, r.URL.Path)
@@ -20,7 +35,16 @@ func loggingRequestMiddleware(next http.Handler) http.Handler {
 
 func main() {
 
-	database.ConnectDB()
+	c := cron.New()
+
+	c.AddFunc("@every 5s", func() {
+		fmt.Println("cron task running")
+	})
+
+	c.Start()
+
+	databaseURL := goDotEnvVariable("DATABASE_URL")
+	database.ConnectDB(databaseURL)
 	defer database.CloseDB()
 
 	mux := http.NewServeMux()
@@ -33,7 +57,11 @@ func main() {
 	mux.Handle("/comments/add", middlewares.JWTMiddleware(http.HandlerFunc(comments.AddCommentHandler)))
 	mux.HandleFunc("/comments", comments.GetEventCommentsHandler)
 
-	fmt.Println("Server started on port 8080")
-	http.ListenAndServe(":8080", loggingRequestMiddleware(mux))
+	go func() {
+		fmt.Println("Server started on port 8080")
+		http.ListenAndServe(":8080", loggingRequestMiddleware(mux))
+	}()
+
+	select {}
 
 }

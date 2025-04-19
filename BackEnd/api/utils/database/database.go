@@ -4,14 +4,15 @@ import (
 	"context"
 	"log"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-var DB *pgx.Conn
+var DB *pgxpool.Pool
 
-func ConnectDB() {
+func ConnectDB(databaseURL string) {
 	var err error
-	DB, err = pgx.Connect(context.Background(), "DATABASE_URL")
+
+	DB, err = pgxpool.New(context.Background(), databaseURL)
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
@@ -20,6 +21,6 @@ func ConnectDB() {
 
 func CloseDB() {
 	if DB != nil {
-		DB.Close(context.Background())
+		DB.Close()
 	}
 }
