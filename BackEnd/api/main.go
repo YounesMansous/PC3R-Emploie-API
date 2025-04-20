@@ -6,6 +6,7 @@ import (
 	"api/controllers/events"
 	"api/controllers/lines"
 	"api/middlewares"
+	"api/utils"
 	"api/utils/database"
 	"fmt"
 	"log"
@@ -37,11 +38,12 @@ func main() {
 
 	c := cron.New()
 
-	c.AddFunc("@every 5s", func() {
-		fmt.Println("cron task running")
+	prim_api_key := goDotEnvVariable("PRIM_API_KEY")
+	c.AddFunc("@every 1h", func() {
+		utils.PrimCall(prim_api_key)
 	})
 
-	c.Start()
+	//c.Start()
 
 	databaseURL := goDotEnvVariable("DATABASE_URL")
 	database.ConnectDB(databaseURL)
