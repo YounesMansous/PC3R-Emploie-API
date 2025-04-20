@@ -3,7 +3,7 @@ package models
 import "time"
 
 type Comments struct {
-	ID      int8      `json:"id"`
+	ID      int64     `json:"id"`
 	Content string    `json:"content"`
 	Date    time.Time `json:"created_at"`
 	Event   int8      `json:"event_id"`
@@ -11,7 +11,7 @@ type Comments struct {
 }
 
 type CommentsJSON struct {
-	ID      int8      `json:"id"`
+	ID      int64     `json:"id"`
 	Content string    `json:"content"`
 	User    string    `json:"user"`
 	Date    time.Time `json:"created_at"`
