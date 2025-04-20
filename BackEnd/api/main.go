@@ -43,7 +43,7 @@ func main() {
 		utils.PrimCall(prim_api_key)
 	})
 
-	//c.Start()
+	c.Start()
 
 	databaseURL := goDotEnvVariable("DATABASE_URL")
 	database.ConnectDB(databaseURL)
