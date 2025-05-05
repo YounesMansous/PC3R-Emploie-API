@@ -16,6 +16,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/robfig/cron/v3"
+	"github.com/rs/cors"
 )
 
 func goDotEnvVariable(key string) string {
@@ -61,12 +62,21 @@ func main() {
 	mux.HandleFunc("/lines/modes/id", lines.GetTransportModeLinesIdsHandler)
 	mux.HandleFunc("/events/line", events.GetLineEventsHandler)
 	mux.HandleFunc("/events", events.GetEventHandler)
+	mux.HandleFunc("/logout", auth.LogoutHandler)
 	mux.Handle("/comments/add", middlewares.JWTMiddleware(http.HandlerFunc(comments.AddCommentHandler)))
 	mux.HandleFunc("/comments", comments.GetEventCommentsHandler)
 
 	go func() {
 		fmt.Println("Server started on port 8080")
-		http.ListenAndServe(":8080", loggingRequestMiddleware(mux))
+		handler := cors.New(cors.Options{
+			AllowedOrigins:   []string{"http://localhost:3000"},
+			AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+			AllowedHeaders:   []string{"Authorization", "Content-Type"},
+			AllowCredentials: true,
+		}).Handler(loggingRequestMiddleware(mux))
+
+		http.ListenAndServe(":8080", handler)
+
 	}()
 
 	select {}
