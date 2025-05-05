@@ -161,6 +161,23 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	cookie := http.Cookie{
+		Name:     "jwt",
+		Value:    "",
+		Expires:  time.Now().Add(-time.Hour),
+		HttpOnly: true,
+		Path:     "/",
+	}
+
+	http.SetCookie(w, &cookie)
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{
+		"message": "Déconnexion réussie",
+	})
+}
+
 func HashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	return string(bytes), err
