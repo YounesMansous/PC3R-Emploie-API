@@ -93,6 +93,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		Value:    token,
 		Expires:  time.Now().Add(time.Hour * 24),
 		HttpOnly: true,
+		SameSite: http.SameSiteNoneMode,
+		Secure:   false,
 	}
 
 	http.SetCookie(w, &cookie)
@@ -149,6 +151,8 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		Value:    token,
 		Expires:  time.Now().Add(time.Hour * 24),
 		HttpOnly: true,
+		SameSite: http.SameSiteNoneMode,
+		Secure:   false,
 	}
 
 	http.SetCookie(w, &cookie)
@@ -168,6 +172,8 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		Expires:  time.Now().Add(-time.Hour),
 		HttpOnly: true,
 		Path:     "/",
+		SameSite: http.SameSiteNoneMode,
+		Secure:   false,
 	}
 
 	http.SetCookie(w, &cookie)
