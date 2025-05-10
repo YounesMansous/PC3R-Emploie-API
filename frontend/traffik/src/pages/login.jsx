@@ -3,12 +3,14 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 import { BASE_URL } from "../utils/const";
 import { useAuth } from "../hooks/AuthContext";
+import { useNavigate } from "react-router";
 
 const Login = () => {
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,6 +25,7 @@ const Login = () => {
       if (response.status === 200) {
         setMessage("Connexion réussie !");
         login();
+        navigate("/");
       }
     } catch (error) {
       if (error.response) {
@@ -42,7 +45,7 @@ const Login = () => {
     >
       <div className="card p-4" style={{ maxWidth: "400px", width: "100%" }}>
         <h2 className="text-center mb-4">Connexion</h2>
-        {message && <div className="alert alert-info">{message}</div>}
+        {message && <div className="alert alert-danger">{message}</div>}
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label htmlFor="email" className="form-label">

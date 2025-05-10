@@ -1,9 +1,16 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { BASE_URL } from "../utils/const";
+import { useNavigate } from "react-router";
 
 function Home() {
   const [transportsMode, setTransportsMode] = useState([]);
+  const navigate = useNavigate();
+
+  const toTransportEventsHandler = (mode) => {
+    console.log("hello");
+    navigate(`/events/${mode}`);
+  };
 
   useEffect(() => {
     const getTransportsMode = async () => {
@@ -31,7 +38,7 @@ function Home() {
           transportsMode.map((mode) => (
             <div
               onClick={() => {
-                console.log(mode.type);
+                toTransportEventsHandler(mode.type);
               }}
               key={mode.type}
               className="col-md-3 m-2 p-3 border rounded text-center"

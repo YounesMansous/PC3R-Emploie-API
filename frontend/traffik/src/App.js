@@ -5,6 +5,8 @@ import Home from "./pages/Home";
 import Navbar from "./components/Navbar";
 import Login from "./pages/login";
 import { AuthProvider } from "./hooks/AuthContext";
+import Register from "./pages/register";
+import Events from "./pages/events";
 
 function App() {
   return (
@@ -14,6 +16,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/events/:mode" element={<Events />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
