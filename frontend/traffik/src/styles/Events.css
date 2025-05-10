@@ -1,0 +1,18 @@
+.event {
+    display: flex;
+    flex-direction: column;
+    margin: 24px 0px;
+    border: 2px solid rgb(13, 202, 240);
+    padding: 24px;
+    box-shadow: rgb(13, 202, 240) -09px 9px;
+}
+
+.event p {
+    font-size: 14px;
+    text-align: justify;
+}
+
+.event .date {
+    font-size: 10px;
+    align-self: flex-end;
+}

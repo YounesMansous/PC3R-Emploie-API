@@ -1,0 +1,77 @@
+.button-lines {
+    background-color: rgb(232, 232, 232);
+    border: none;
+    text-decoration: none;
+    color: black;
+    padding: 8px 12px;
+}
+
+.button-lines:hover {
+    background-color: rgb(13, 202, 240);
+    color: white;
+    border: none;
+}
+
+.button-comments {
+    background-color: rgb(13, 202, 240);
+    border: none;
+    text-decoration: none;
+    color: white;
+    padding: 8px 12px;
+}
+
+.button-comments:hover {
+    background-color: rgb(13, 202, 240);
+    color: white;
+    border: none;
+}
+
+.button-comments:active {
+    transform: scale(0.98);
+    opacity: 0.8;
+    
+}
+
+.lines-button {
+    text-decoration: none;
+    color: black;
+    padding: 8px 12px;
+    margin-bottom: 4px;
+}
+
+.lines-button::after {
+    position: relative;
+
+}
+
+
+.animated-button {
+    position: relative;
+    display: inline-block;
+    padding: 8px 12px;
+    background-color: rgb(232, 232, 232);
+    color: black;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 4px;
+}
+
+.animated-button:hover {
+    background-color: white;
+}
+
+.animated-button::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background-color: rgb(13, 202, 240);
+    width: 0%;
+    transition: width 0.7s ease-in-out;
+}
+
+.animated-button:hover::after {
+    width: 100%;
+}
