@@ -46,12 +46,11 @@ const Register = () => {
 
     try {
       setLoading(true);
-      const res = await axios.post(`${BASE_URL}/register`, form, {
-        withCredentials: true,
-      });
+      const res = await axios.post(`${BASE_URL}/register`, form);
 
       if (res.status === 200) {
         login();
+        localStorage.setItem("authToken", res.data.token);
         navigate("/");
       }
     } catch (err) {
