@@ -1,9 +1,10 @@
 .comment {
-    margin-top: 8px;
+    margin: 12px 0px;
     border-radius: 10px;
-    box-shadow: #868686 0px 8px 4px 2px;
+    box-shadow: #e6e6e6 0px 8px 4px 2px;
     padding: 8px 12px;
     background-color: white;
+    font-size: 14px;
 }
 
 .comment .bottom {

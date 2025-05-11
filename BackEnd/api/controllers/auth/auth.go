@@ -2,6 +2,7 @@ package auth
 
 import (
 	"api/models"
+	"api/utils"
 	"api/utils/database"
 	"context"
 	"encoding/json"
@@ -16,7 +17,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var jwtKey = []byte("vfsnljfsvmfsovnfv")
+var jwtKey = []byte(utils.GoDotEnvVariable("JWT_KEY"))
 
 type JwtPayload struct {
 	Email string `json:"email"`

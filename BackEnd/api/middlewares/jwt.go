@@ -1,31 +1,37 @@
 package middlewares
 
 import (
-	"api/controllers/auth"
+	"api/utils"
+	"fmt"
 	"net/http"
+	"strings"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 func JWTMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-		cookie, err := r.Cookie("jwt")
-		if err != nil {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		authHeader := r.Header.Get("Authorization")
+		if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
+			http.Error(w, "Token vide", http.StatusUnauthorized)
 			return
 		}
 
-		// Le token est dans le format "Bearer <token>", on récupère la seconde partie
-		token := cookie.Value
+		tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
 
-		// Valider le token
-		_, err = auth.ValidateJWT(token)
+		token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
 
-		if err != nil {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("unexpected signing method")
+			}
+			return []byte(utils.GoDotEnvVariable("JWT_KEY")), nil
+		})
+
+		if err != nil || !token.Valid {
+			http.Error(w, "Token invalide", http.StatusUnauthorized)
 			return
 		}
 
-		// Continuer vers le handler
 		next.ServeHTTP(w, r)
 	})
 }

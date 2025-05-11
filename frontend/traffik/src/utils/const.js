@@ -1,4 +1,4 @@
-const BASE_URL = "https://traffik-ftjk.onrender.com";
+const BASE_URL = "http://localhost:8080";
 
 const formatDate = (isoDate) => {
   const dateObj = new Date(isoDate);
