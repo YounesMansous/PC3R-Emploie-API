@@ -95,6 +95,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		Name:    "jwt",
 		Value:   token,
 		Expires: time.Now().Add(time.Hour * 24),
+		Secure:  false,
 	}
 
 	http.SetCookie(w, &cookie)
