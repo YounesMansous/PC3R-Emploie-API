@@ -110,7 +110,7 @@ const Comments = ({ eventId }) => {
         <Form eventId={eventId} onCommentAdded={fetchComments} />
       )}
 
-      <div className="offcanvas-body bg-light">
+      <div className="offcanvas-body bg-light opacity-3 mt-3 mx-3">
         {comments == null ? (
           <p>Aucun commentaire pour cet évènement.</p>
         ) : (
