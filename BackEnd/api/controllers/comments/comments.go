@@ -27,7 +27,6 @@ func AddCommentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Headers
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
@@ -54,20 +53,29 @@ func AddCommentHandler(w http.ResponseWriter, r *http.Request) {
 
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {
-		http.Error(w, "Token manquant", http.StatusUnauthorized)
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": "Token manquant",
+		})
 		return
 	}
 
 	parts := strings.Split(authHeader, " ")
 	if len(parts) != 2 || parts[0] != "Bearer" {
-		http.Error(w, "Format de token invalide", http.StatusUnauthorized)
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": "Format token invalide",
+		})
 		return
 	}
 	tokenStr := parts[1]
 
 	jwtToken, err := auth.ValidateJWT(tokenStr)
 	if err != nil {
-		http.Error(w, "Token invalide", http.StatusUnauthorized)
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": "Token invalide",
+		})
 		return
 	}
 
@@ -75,7 +83,10 @@ func AddCommentHandler(w http.ResponseWriter, r *http.Request) {
 	err = database.DB.QueryRow(context.Background(), "SELECT id FROM users WHERE email=$1", jwtToken.Email).Scan(&userID)
 	if err != nil {
 		log.Println("Erreur de récupération de l'utilisateur :", err)
-		http.Error(w, "Utilisateur non trouvé", http.StatusUnauthorized)
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": "Utilisateur inexistant",
+		})
 		return
 	}
 
