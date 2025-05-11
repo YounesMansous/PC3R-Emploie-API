@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import "../styles/Events.css";
 import "../styles/Comments.css";
@@ -71,7 +71,7 @@ const Comments = ({ eventId }) => {
   const [comments, setComments] = useState([]);
   const { isAuthenticated } = useAuth();
 
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     try {
       const response = await axios.get(
         `${BASE_URL}/comments?event_id=${eventId}`
@@ -80,13 +80,13 @@ const Comments = ({ eventId }) => {
     } catch (error) {
       console.error("Erreur chargement commentaires", error);
     }
-  };
+  }, [eventId]);
 
   useEffect(() => {
     if (eventId) {
       fetchComments();
     }
-  }, [eventId]);
+  }, [eventId, fetchComments]);
 
   return (
     <div
