@@ -9,25 +9,12 @@ import (
 	"api/utils"
 	"api/utils/database"
 	"fmt"
-	"log"
 	"net/http"
-	"os"
 
-	"github.com/joho/godotenv"
 	"github.com/robfig/cron/v3"
 	"github.com/rs/cors"
 )
 
-func goDotEnvVariable(key string) string {
-
-	err := godotenv.Load(".env")
-
-	if err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
-	}
-
-	return os.Getenv(key)
-}
 func loggingRequestMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("%s %s\n", r.Method, r.URL.Path)
@@ -39,14 +26,14 @@ func main() {
 
 	c := cron.New()
 
-	prim_api_key := goDotEnvVariable("PRIM_API_KEY")
+	prim_api_key := utils.GoDotEnvVariable("PRIM_API_KEY")
 	c.AddFunc("@every 1h", func() {
 		utils.PrimCall(prim_api_key)
 	})
 
 	c.Start()
 
-	databaseURL := goDotEnvVariable("DATABASE_URL")
+	databaseURL := utils.GoDotEnvVariable("DATABASE_URL")
 	database.ConnectDB(databaseURL)
 	defer database.CloseDB()
 
@@ -64,10 +51,9 @@ func main() {
 	go func() {
 		fmt.Println("Server started on port 8080")
 		handler := cors.New(cors.Options{
-			AllowedOrigins:   []string{"http://localhost:3000", "https://traffik-two.vercel.app"},
-			AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-			AllowedHeaders:   []string{"Authorization", "Content-Type"},
-			AllowCredentials: true,
+			AllowedOrigins: []string{"http://localhost:3000", "https://traffik-two.vercel.app"},
+			AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+			AllowedHeaders: []string{"Authorization", "Content-Type"},
 		}).Handler(loggingRequestMiddleware(mux))
 
 		http.ListenAndServe(":8080", handler)

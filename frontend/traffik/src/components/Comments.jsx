@@ -30,8 +30,8 @@ const Form = ({ eventId, onCommentAdded }) => {
       setText("");
       onCommentAdded();
     } catch (error) {
-      console.log(error.response.status);
       if (error.response.status === 401) {
+        console.log(error.response);
         setMessage("Veuillez vous connecter");
       } else {
         setMessage("Impossible de se connecter au serveur.");
@@ -114,7 +114,7 @@ const Comments = ({ eventId }) => {
         <Form eventId={eventId} onCommentAdded={fetchComments} />
       )}
 
-      <div className="offcanvas-body bg-light opacity-3 mt-3 mx-3">
+      <div className="offcanvas-body  mt-3 mx-3">
         {comments == null ? (
           <p>Aucun commentaire pour cet évènement.</p>
         ) : (
