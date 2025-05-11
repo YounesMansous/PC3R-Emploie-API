@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../styles/Events.css";
-import { BASE_URL } from "../utils/const";
+import "../styles/Comments.css";
+import { BASE_URL, formatDate } from "../utils/const";
 import { useAuth } from "../hooks/AuthContext";
 
 const Form = ({ eventId, onCommentAdded }) => {
@@ -58,8 +59,10 @@ const Comment = ({ text, user, date }) => {
   return (
     <div className="comment">
       <p className="message">{text}</p>
-      <p className="user">{user}</p>
-      <p className="date">{date}</p>
+      <div className="bottom">
+        <p className="user">{user}</p>
+        <p className="date">{formatDate(date)}</p>
+      </div>
     </div>
   );
 };
@@ -107,7 +110,7 @@ const Comments = ({ eventId }) => {
         <Form eventId={eventId} onCommentAdded={fetchComments} />
       )}
 
-      <div className="offcanvas-body">
+      <div className="offcanvas-body bg-light">
         {comments == null ? (
           <p>Aucun commentaire pour cet évènement.</p>
         ) : (

@@ -1,17 +1,7 @@
 import React from "react";
 
 import "../styles/Events.css";
-
-const formatDate = (isoDate) => {
-  const dateObj = new Date(isoDate);
-  return dateObj.toLocaleString("fr-FR", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
+import { formToJSON } from "axios";
 
 const Event = ({ id, title, message, date, ligne, onCommentClick }) => {
   return (
@@ -20,7 +10,7 @@ const Event = ({ id, title, message, date, ligne, onCommentClick }) => {
       <hr />
       <h6 dangerouslySetInnerHTML={{ __html: title }}></h6>
       <div dangerouslySetInnerHTML={{ __html: message }}></div>
-      <p className="date">{formatDate(date)}</p>
+      <p className="date">{formToJSON(date)}</p>
 
       <button
         className="button-comments  align-self-center"

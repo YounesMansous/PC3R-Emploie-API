@@ -1,0 +1,24 @@
+.comment {
+    margin-top: 8px;
+    border-radius: 10px;
+    box-shadow: #868686 0px 8px 4px 2px;
+    padding: 8px 12px;
+    background-color: white;
+}
+
+.comment .bottom {
+    display: flex;
+    justify-content: space-between;
+}
+
+.comment .user {
+    background-color: rgb(13, 202, 240);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+}
+
+.comment .date {
+    font-size: 12px;
+}
