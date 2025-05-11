@@ -9,6 +9,8 @@ const Form = ({ eventId, onCommentAdded }) => {
   const [text, setText] = useState("");
   const [message, setMessage] = useState("");
 
+  const token = localStorage.getItem("authToken");
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!text.trim()) return;
@@ -20,7 +22,9 @@ const Form = ({ eventId, onCommentAdded }) => {
           content: text,
         },
         {
-          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
       setText("");

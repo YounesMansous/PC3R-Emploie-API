@@ -16,15 +16,15 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        `${BASE_URL}/login`,
-        { email, password },
-        { withCredentials: true }
-      );
+      const response = await axios.post(`${BASE_URL}/login`, {
+        email,
+        password,
+      });
 
       if (response.status === 200) {
         setMessage("Connexion réussie !");
         login();
+        localStorage.setItem("authToken", response.data.token);
         navigate("/");
       }
     } catch (error) {

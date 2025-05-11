@@ -10,99 +10,86 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func AddCommentHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
+	if r.Method == http.MethodOptions {
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	if r.Method != http.MethodPost {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
 
+	// Headers
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	w.Header().Set("Content-Type", "application/json")
 
+	eventIDStr := r.URL.Query().Get("event_id")
+	eventID, err := strconv.ParseInt(eventIDStr, 10, 64)
+	if err != nil {
+		http.Error(w, "ID de l'événement invalide", http.StatusBadRequest)
+		return
+	}
+
 	var comment models.Comments
-
-	event_id, err := strconv.ParseInt(r.URL.Query().Get("event_id"), 10, 64)
-
-	if err != nil {
-		http.Error(w, "Evénement innexistant", http.StatusInternalServerError)
-	}
-
-	comment.Event = int64(event_id)
-	fmt.Println(comment.Event)
-
-	err = json.NewDecoder(r.Body).Decode(&comment)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		response := map[string]string{
-			"error": "Entrées invalides",
-		}
-		json.NewEncoder(w).Encode(response)
+	if err := json.NewDecoder(r.Body).Decode(&comment); err != nil {
+		http.Error(w, "Entrées invalides", http.StatusBadRequest)
 		return
 	}
 
-	if comment.Content == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		response := map[string]string{
-			"error": "Contenu du commentaire vide",
-		}
-		json.NewEncoder(w).Encode(response)
+	if strings.TrimSpace(comment.Content) == "" {
+		http.Error(w, "Contenu du commentaire vide", http.StatusBadRequest)
+		return
+	}
+	comment.Event = eventID
+
+	authHeader := r.Header.Get("Authorization")
+	if authHeader == "" {
+		http.Error(w, "Token manquant", http.StatusUnauthorized)
 		return
 	}
 
-	cookie, err := r.Cookie("jwt")
+	parts := strings.Split(authHeader, " ")
+	if len(parts) != 2 || parts[0] != "Bearer" {
+		http.Error(w, "Format de token invalide", http.StatusUnauthorized)
+		return
+	}
+	tokenStr := parts[1]
 
+	jwtToken, err := auth.ValidateJWT(tokenStr)
 	if err != nil {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		http.Error(w, "Token invalide", http.StatusUnauthorized)
 		return
 	}
 
-	jwtToken, err := auth.ValidateJWT(cookie.Value)
-
+	var userID int
+	err = database.DB.QueryRow(context.Background(), "SELECT id FROM users WHERE email=$1", jwtToken.Email).Scan(&userID)
 	if err != nil {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		log.Println("Erreur de récupération de l'utilisateur :", err)
+		http.Error(w, "Utilisateur non trouvé", http.StatusUnauthorized)
 		return
 	}
 
-	rows, err := database.DB.Query(context.Background(), "SELECT id FROM users WHERE email=$1", jwtToken.Email)
-
+	_, err = database.DB.Exec(context.Background(), "INSERT INTO comments (user_id, content, event_id) VALUES ($1, $2, $3)", userID, comment.Content, comment.Event)
 	if err != nil {
-		log.Println(err)
-		http.Error(w, "Database error", http.StatusInternalServerError)
-		return
-	}
-
-	defer rows.Close()
-
-	if rows.Next() {
-		values, err := rows.Values()
-		if err != nil {
-			log.Println(err)
-			http.Error(w, "Database error", http.StatusInternalServerError)
-			return
-		}
-		user_id := values[0]
-		_, err = database.DB.Exec(context.Background(), "INSERT INTO comments (user_id, content, event_id) VALUES ($1, $2, $3)", user_id, comment.Content, comment.Event)
-
-		if err != nil {
-			log.Println(err)
-			http.Error(w, "Database insert error", http.StatusInternalServerError)
-			return
-		}
-	} else {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		log.Println("Erreur insertion commentaire :", err)
+		http.Error(w, "Erreur lors de l'ajout du commentaire", http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	response := map[string]string{
+	json.NewEncoder(w).Encode(map[string]string{
 		"success": "Commentaire ajouté",
-	}
-	json.NewEncoder(w).Encode(response)
+	})
 }
 
 func GetEventCommentsHandler(w http.ResponseWriter, r *http.Request) {

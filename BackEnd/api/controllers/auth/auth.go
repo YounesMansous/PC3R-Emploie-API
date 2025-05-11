@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -91,16 +92,10 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	cookie := http.Cookie{
-		Name:    "jwt",
-		Value:   token,
-		Expires: time.Now().Add(time.Hour * 24),
-		Secure:  false,
-	}
 
-	http.SetCookie(w, &cookie)
 	response := map[string]string{
 		"success": "Utilisateur connecté",
+		"token":   token,
 	}
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)
@@ -150,17 +145,9 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	cookie := http.Cookie{
-		Name:    "jwt",
-		Value:   token,
-		Expires: time.Now().Add(time.Hour * 24),
-	}
-
-	http.SetCookie(w, &cookie)
-
 	response := map[string]string{
 		"success": "Compte enregistré",
+		"token":   token,
 	}
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)
@@ -168,20 +155,46 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-
 	w.Header().Set("Content-Type", "application/json")
-	cookie := http.Cookie{
-		Name:    "jwt",
-		Value:   "",
-		Expires: time.Now().Add(time.Hour * 24),
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
 	}
 
-	http.SetCookie(w, &cookie)
+	if r.Method != "POST" {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
 
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	authHeader := r.Header.Get("Authorization")
+	if authHeader == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": "Token d'autorisation manquant",
+		})
+		return
+	}
 
-	w.Header().Set("Content-Type", "application/json")
+	parts := strings.Split(authHeader, " ")
+	if len(parts) != 2 || parts[0] != "Bearer" {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": "Format de token invalide",
+		})
+		return
+	}
+
+	token := parts[1]
+	_, err := ValidateJWT(token)
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": "Token invalide",
+		})
+		return
+	}
+
 	json.NewEncoder(w).Encode(map[string]string{
 		"message": "Déconnexion réussie",
 	})
