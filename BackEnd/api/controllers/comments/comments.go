@@ -18,17 +18,22 @@ func AddCommentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
 	w.Header().Set("Content-Type", "application/json")
 
 	var comment models.Comments
 
-	event_id, err := strconv.ParseInt(r.URL.Query().Get("event_id"), 10, 8)
+	event_id, err := strconv.ParseInt(r.URL.Query().Get("event_id"), 10, 64)
 
 	if err != nil {
 		http.Error(w, "Evénement innexistant", http.StatusInternalServerError)
 	}
 
-	comment.Event = int8(event_id)
+	comment.Event = int64(event_id)
+	fmt.Println(comment.Event)
 
 	err = json.NewDecoder(r.Body).Decode(&comment)
 	if err != nil {
@@ -101,6 +106,10 @@ func AddCommentHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetEventCommentsHandler(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 	w.Header().Set("Content-Type", "application/json")
 	if r.Method != "GET" {
