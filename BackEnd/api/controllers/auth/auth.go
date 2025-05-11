@@ -92,12 +92,9 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	cookie := http.Cookie{
-		Name:     "jwt",
-		Value:    token,
-		Expires:  time.Now().Add(time.Hour * 24),
-		HttpOnly: true,
-		SameSite: http.SameSiteNoneMode,
-		Secure:   true,
+		Name:    "jwt",
+		Value:   token,
+		Expires: time.Now().Add(time.Hour * 24),
 	}
 
 	http.SetCookie(w, &cookie)
@@ -154,12 +151,9 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	cookie := http.Cookie{
-		Name:     "jwt",
-		Value:    token,
-		Expires:  time.Now().Add(time.Hour * 24),
-		HttpOnly: true,
-		SameSite: http.SameSiteNoneMode,
-		Secure:   true,
+		Name:    "jwt",
+		Value:   token,
+		Expires: time.Now().Add(time.Hour * 24),
 	}
 
 	http.SetCookie(w, &cookie)
@@ -176,12 +170,9 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	cookie := http.Cookie{
-		Name:     "jwt",
-		Value:    "",
-		Expires:  time.Now().Add(time.Hour * 24),
-		HttpOnly: true,
-		SameSite: http.SameSiteNoneMode,
-		Secure:   true,
+		Name:    "jwt",
+		Value:   "",
+		Expires: time.Now().Add(time.Hour * 24),
 	}
 
 	http.SetCookie(w, &cookie)
