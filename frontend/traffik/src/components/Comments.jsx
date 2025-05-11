@@ -116,7 +116,7 @@ const Comments = ({ eventId }) => {
               key={comment.id}
               text={comment.content}
               user={comment.user}
-              date={comment.date}
+              date={comment.created_at}
             />
           ))
         )}
