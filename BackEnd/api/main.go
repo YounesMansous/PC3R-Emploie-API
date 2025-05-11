@@ -12,7 +12,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/robfig/cron/v3"
@@ -43,10 +42,6 @@ func main() {
 	prim_api_key := goDotEnvVariable("PRIM_API_KEY")
 	c.AddFunc("@every 1h", func() {
 		utils.PrimCall(prim_api_key)
-	})
-
-	c.AddFunc("@every 5s", func() {
-		fmt.Println("API running... ", time.Now())
 	})
 
 	c.Start()

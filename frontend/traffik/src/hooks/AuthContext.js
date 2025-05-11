@@ -12,11 +12,23 @@ export const AuthProvider = ({ children }) => {
   const login = () => setIsAuthenticated(true);
   const logout = async () => {
     try {
-      await axios.get(`${BASE_URL}/logout`, { withCredentials: true });
+      const token = localStorage.getItem("authToken");
+
+      await axios.post(
+        `${BASE_URL}/logout`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
     } catch (e) {
       console.error("Erreur lors du logout :", e);
+    } finally {
+      localStorage.removeItem("authToken");
+      setIsAuthenticated(false);
     }
-    setIsAuthenticated(false);
   };
 
   return (
